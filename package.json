@@ -1,35 +1,10 @@
-const crypto = require('crypto');
-
-module.exports = (req, res) => {
-    // Encabezados CORS
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    try {
-        const { reference, amountInCents, currency } = req.body;
-        const integritySecret = "prod_integrity_9QPykHUQT2g8dTwNJzrKraJAABsNGReM";
-
-        // Asegurar tipos exactos sin espacios ni decimales
-        const cleanRef = String(reference).trim();
-        const cleanAmount = String(Math.round(Number(amountInCents)));
-        const cleanCurrency = String(currency).trim();
-
-        // Estructura exigida por Wompi: Reference + AmountInCents + Currency + IntegritySecret
-        const stringToSign = `${cleanRef}${cleanAmount}${cleanCurrency}${integritySecret}`;
-        
-        // Hash SHA-256 en hexadecimal lowercase
-        const signature = crypto.createHash('sha256').update(stringToSign).digest('hex');
-
-        return res.status(200).json({ 
-            signature,
-            debug: { cleanRef, cleanAmount, cleanCurrency }
-        });
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
-    }
-};
+{
+  "name": "wompi-backend",
+  "version": "1.0.0",
+  "description": "Backend para firma de integraciones Wompi",
+  "main": "api/sign.js",
+  "scripts": {
+    "start": "node api/sign.js"
+  },
+  "dependencies": {}
+}
